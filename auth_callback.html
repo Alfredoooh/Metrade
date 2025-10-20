@@ -1,0 +1,57 @@
+<!-- auth-callback.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Auth Callback</title>
+  <style>body{font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0} .box{max-width:420px;padding:20px;text-align:center}</style>
+</head>
+<body>
+  <div class="box">
+    <h2>Autorizando...</h2>
+    <p>A fechar automaticamente.</p>
+  </div>
+  <script>
+    (function() {
+      // Se usar response_type=token (implicit flow), token vem em hash: #access_token=...&...
+      function postToken(token) {
+        try {
+          // postMessage para window.opener
+          if (window.opener) {
+            window.opener.postMessage({ type: 'DERIV_TOKEN', token: token }, window.location.origin);
+          } else {
+            // fallback: salvar em localStorage (caso abra na mesma janela)
+            localStorage.setItem('deriv_pro_token_tmp', token);
+          }
+        } catch (e) {
+          console.error('Erro ao enviar token para opener', e);
+        }
+      }
+
+      // Tenta extrair access_token do fragment (#)
+      const hash = window.location.hash.substring(1);
+      const hashParams = new URLSearchParams(hash);
+      const token = hashParams.get('access_token') || hashParams.get('token') || null;
+
+      if (token) {
+        postToken(token);
+        // fechar janela popup após 800ms
+        setTimeout(() => { window.close(); }, 800);
+      } else {
+        // Talvez veio como ?token1=... ou ?code=...
+        const qp = new URLSearchParams(window.location.search);
+        const t = qp.get('token') || qp.get('token1') || qp.get('access_token') || qp.get('code');
+        if (t) {
+          postToken(t);
+          setTimeout(() => { window.close(); }, 800);
+        } else {
+          // nada — mostra mensagem e fecha depois
+          console.warn('Token não encontrado no callback URL');
+          setTimeout(() => { window.close(); }, 1500);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

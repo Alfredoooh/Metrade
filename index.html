@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#BA1A1A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Deriv Pro Trading</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="screen active">
+    <div class="login-background">
+      <div class="login-content">
+        <div class="logo-container">
+          <span class="material-symbols-rounded logo-icon">trending_up</span>
+          <h1 class="app-title">Deriv Pro</h1>
+          <p class="app-subtitle">Advanced Trading Platform</p>
+        </div>
+
+        <div class="login-form">
+          <div class="input-group">
+            <label class="input-label">API Token</label>
+            <div class="input-wrapper">
+              <span class="material-symbols-rounded input-icon">vpn_key</span>
+              <input type="password" id="apiToken" class="input-field" placeholder="Cole seu token de API">
+              <button class="icon-button" id="toggleToken">
+                <span class="material-symbols-rounded">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <button class="primary-button" id="loginTokenBtn">
+            <span class="material-symbols-rounded">login</span>
+            <span>Entrar com Token</span>
+          </button>
+
+          <div class="divider"><span>ou</span></div>
+
+          <button class="secondary-button" id="loginOAuthBtn">
+            <span class="material-symbols-rounded">account_circle</span>
+            <span>Entrar com Deriv</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="appScreen" class="screen">
+    <header class="top-app-bar">
+      <button class="icon-button" id="menuBtn">
+        <span class="material-symbols-rounded">menu</span>
+      </button>
+      <div class="app-bar-title"><span id="screenTitle">Home</span></div>
+      <button class="icon-button" id="accountBtn">
+        <span class="material-symbols-rounded">account_circle</span>
+      </button>
+    </header>
+
+    <nav class="navigation-drawer" id="navDrawer">
+      <div class="drawer-header">
+        <span class="material-symbols-rounded drawer-logo">trending_up</span>
+        <h2 class="drawer-title">Deriv Pro</h2>
+        <button class="icon-button" id="closeDrawer">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+      <div class="drawer-content">
+        <div class="nav-section">
+          <button class="nav-item" data-nav="calculator">
+            <span class="material-symbols-rounded">calculate</span>
+            <span>Calculadora</span>
+          </button>
+          <button class="nav-item" data-nav="notes">
+            <span class="material-symbols-rounded">note</span>
+            <span>Anotações</span>
+          </button>
+          <button class="nav-item" data-nav="strategy">
+            <span class="material-symbols-rounded">psychology</span>
+            <span>Estratégias</span>
+          </button>
+          <button class="nav-item" data-nav="settings">
+            <span class="material-symbols-rounded">settings</span>
+            <span>Configurações</span>
+          </button>
+          <button class="nav-item" id="logoutBtn">
+            <span class="material-symbols-rounded">logout</span>
+            <span>Sair</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <main class="content-container" id="contentContainer">
+      <!-- Home Page -->
+      <div class="content-page active" data-page="home">
+        <div class="user-profile-card" id="userProfileCard">
+          <div class="user-avatar">
+            <span class="material-symbols-rounded">account_circle</span>
+          </div>
+          <div class="user-info">
+            <h3 class="user-name" id="userName">Carregando...</h3>
+            <p class="user-id" id="userId">---</p>
+          </div>
+          <button class="icon-button">
+            <span class="material-symbols-rounded">arrow_forward_ios</span>
+          </button>
+        </div>
+
+        <div class="balance-card">
+          <div class="balance-header">
+            <h3>Saldo Total</h3>
+            <button class="icon-button" id="refreshBalance">
+              <span class="material-symbols-rounded">refresh</span>
+            </button>
+          </div>
+          <h2 class="balance-amount" id="balanceAmount">$0.00</h2>
+          <div class="balance-change" id="balanceChange">+$0.00 hoje</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="material-symbols-rounded stat-icon">trending_up</span>
+            <div class="stat-content">
+              <p class="stat-label">Lucro</p>
+              <p class="stat-value positive" id="profitValue">+$0.00</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="material-symbols-rounded stat-icon">swap_horiz</span>
+            <div class="stat-content">
+              <p class="stat-label">Trades</p>
+              <p class="stat-value" id="tradesValue">0</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="material-symbols-rounded stat-icon">percent</span>
+            <div class="stat-content">
+              <p class="stat-label">Win Rate</p>
+              <p class="stat-value" id="winRateValue">0%</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <span class="material-symbols-rounded stat-icon">smart_toy</span>
+            <div class="stat-content">
+              <p class="stat-label">Bot Status</p>
+              <p class="stat-value" id="botStatus">Inativo</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="widget-container">
+          <div class="widget-header">
+            <h3>Widget de Trading</h3>
+            <button class="icon-button" id="expandWidget">
+              <span class="material-symbols-rounded">open_in_full</span>
+            </button>
+          </div>
+          <div class="trading-widget" id="tradingWidget">
+            <div class="widget-content">
+              <div class="widget-status">
+                <span class="status-indicator"></span>
+                <span class="status-text">Aguardando...</span>
+              </div>
+              <div class="widget-data">
+                <div class="widget-item">
+                  <span class="widget-label">Símbolo</span>
+                  <span class="widget-value" id="widgetSymbol">-</span>
+                </div>
+                <div class="widget-item">
+                  <span class="widget-label">Preço</span>
+                  <span class="widget-value" id="widgetPrice">-</span>
+                </div>
+                <div class="widget-item">
+                  <span class="widget-label">Previsão</span>
+                  <span class="widget-value" id="widgetPrediction">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Page -->
+      <div class="content-page" data-page="market">
+        <div class="page-header">
+          <h2 class="page-title">Mercado</h2>
+        </div>
+        <div class="search-bar">
+          <span class="material-symbols-rounded search-icon">search</span>
+          <input type="text" class="search-input" id="marketSearch" placeholder="Buscar mercados...">
+        </div>
+        <div class="market-categories" id="marketCategories">
+          <button class="category-chip active" data-category="all">Todos</button>
+          <button class="category-chip" data-category="Synthetic">Synthetic</button>
+          <button class="category-chip" data-category="Forex">Forex</button>
+          <button class="category-chip" data-category="Crypto">Crypto</button>
+        </div>
+        <div class="market-list" id="marketList"></div>
+      </div>
+
+      <!-- Trade Page -->
+      <div class="content-page" data-page="trade">
+        <div class="page-header">
+          <button class="icon-button" id="backBtn">
+            <span class="material-symbols-rounded">arrow_back</span>
+          </button>
+          <div>
+            <h2 class="page-title">Negociar</h2>
+            <p class="page-subtitle" id="tradeSymbol">Selecione um ativo</p>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-controls">
+            <div class="chart-tabs">
+              <button class="chart-tab active" data-chart="line">
+                <span class="material-symbols-rounded">show_chart</span>
+              </button>
+              <button class="chart-tab" data-chart="area">
+                <span class="material-symbols-rounded">area_chart</span>
+              </button>
+              <button class="chart-tab" data-chart="candlestick">
+                <span class="material-symbols-rounded">candlestick_chart</span>
+              </button>
+            </div>
+            <button class="icon-button" id="expandChart">
+              <span class="material-symbols-rounded">open_in_full</span>
+            </button>
+          </div>
+          <div class="chart-container" id="tradeChartContainer">
+            <canvas id="tradeChart"></canvas>
+          </div>
+          <div class="chart-indicators">
+            <button class="indicator-chip" data-indicator="sma">SMA</button>
+            <button class="indicator-chip" data-indicator="ema">EMA</button>
+            <button class="indicator-chip" data-indicator="bollinger">Bollinger</button>
+            <button class="indicator-chip" data-indicator="rsi">RSI</button>
+          </div>
+        </div>
+
+        <div class="analysis-card" id="analysisCard">
+          <div class="analysis-header">
+            <h3>Análise de Mercado</h3>
+            <span class="confidence-badge" id="confidenceBadge">-</span>
+          </div>
+          <div class="analysis-content">
+            <div class="prediction-item">
+              <span class="prediction-label">Tendência:</span>
+              <span class="prediction-value" id="trendValue">Neutro</span>
+            </div>
+            <div class="prediction-item">
+              <span class="prediction-label">Recomendação:</span>
+              <span class="prediction-value" id="recommendationValue">Aguardar</span>
+            </div>
+            <div class="probability-bars">
+              <div class="probability-bar">
+                <span>Rise</span>
+                <div class="bar"><div class="fill rise" id="riseProb" style="width:0%"></div></div>
+                <span id="riseProbText">0%</span>
+              </div>
+              <div class="probability-bar">
+                <span>Fall</span>
+                <div class="bar"><div class="fill fall" id="fallProb" style="width:0%"></div></div>
+                <span id="fallProbText">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="trade-controls">
+          <div class="contract-selector">
+            <button class="contract-btn active" data-contract="CALL">
+              <span class="material-symbols-rounded">arrow_upward</span>
+              <span>Rise</span>
+            </button>
+            <button class="contract-btn" data-contract="PUT">
+              <span class="material-symbols-rounded">arrow_downward</span>
+              <span>Fall</span>
+            </button>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label class="input-label">Valor</label>
+              <div class="input-wrapper">
+                <span class="currency-symbol">$</span>
+                <input type="number" id="stakeAmount" class="input-field" value="1.00" min="0.35" step="0.01">
+              </div>
+            </div>
+            <div class="input-group">
+              <label class="input-label">Duração</label>
+              <div class="input-wrapper">
+                <input type="number" id="duration" class="input-field" value="5" min="1">
+                <select id="durationUnit" class="select-field">
+                  <option value="t">Ticks</option>
+                  <option value="s">Seg</option>
+                  <option value="m">Min</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button class="trade-button" id="executeTrade">
+            <span class="material-symbols-rounded">rocket_launch</span>
+            <span>Executar Trade</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bot Page -->
+      <div class="content-page" data-page="bot">
+        <div class="page-header">
+          <h2 class="page-title">Bot de Trading</h2>
+          <div class="bot-status-indicator" id="botStatusIndicator">
+            <span class="status-dot"></span>
+            <span class="status-text">Inativo</span>
+          </div>
+        </div>
+
+        <div class="bot-config-card">
+          <h3>Configuração</h3>
+          <div class="config-group">
+            <label>Estratégia</label>
+            <select id="botStrategy" class="select-field">
+              <option value="accumulation">Acumulação</option>
+              <option value="martingale">Martingale</option>
+              <option value="fibonacci">Fibonacci</option>
+              <option value="dalembert">D'Alembert</option>
+            </select>
+          </div>
+          <div class="config-row">
+            <div class="config-group">
+              <label>Valor Inicial</label>
+              <input type="number" id="botStake" class="input-field" value="1.00" min="0.35" step="0.01">
+            </div>
+            <div class="config-group">
+              <label>Stop Loss</label>
+              <input type="number" id="botStopLoss" class="input-field" value="100" min="1">
+            </div>
+          </div>
+          <div class="config-row">
+            <div class="config-group">
+              <label>Take Profit</label>
+              <input type="number" id="botTakeProfit" class="input-field" value="500" min="1">
+            </div>
+            <div class="config-group">
+              <label>Max Perdas</label>
+              <input type="number" id="botMaxLosses" class="input-field" value="3" min="1">
+            </div>
+          </div>
+          <div class="config-switches">
+            <label class="switch-label">
+              <input type="checkbox" id="botAutoAnalysis" checked>
+              <span class="switch-slider"></span>
+              <span>Usar Análise Automática</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="bot-stats-card">
+          <h3>Estatísticas</h3>
+          <div class="bot-stats-grid">
+            <div class="bot-stat">
+              <span class="bot-stat-label">Total Trades</span>
+              <span class="bot-stat-value" id="botTotalTrades">0</span>
+            </div>
+            <div class="bot-stat">
+              <span class="bot-stat-label">Vitórias</span>
+              <span class="bot-stat-value positive" id="botWins">0</span>
+            </div>
+            <div class="bot-stat">
+              <span class="bot-stat-label">Derrotas</span>
+              <span class="bot-stat-value negative" id="botLosses">0</span>
+            </div>
+            <div class="bot-stat">
+              <span class="bot-stat-label">Lucro</span>
+              <span class="bot-stat-value" id="botProfit">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bot-actions">
+          <button class="bot-start-button" id="startBot">
+            <span class="material-symbols-rounded">play_arrow</span>
+            <span>Iniciar Bot</span>
+          </button>
+          <button class="bot-stop-button hidden" id="stopBot">
+            <span class="material-symbols-rounded">stop</span>
+            <span>Parar Bot</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- History Page -->
+      <div class="content-page" data-page="history">
+        <div class="page-header">
+          <h2 class="page-title">Histórico</h2>
+          <button class="icon-button" id="clearHistory">
+            <span class="material-symbols-rounded">delete</span>
+          </button>
+        </div>
+        <div class="history-tabs">
+          <button class="history-tab active" data-tab="all">Todos</button>
+          <button class="history-tab" data-tab="wins">Vitórias</button>
+          <button class="history-tab" data-tab="losses">Derrotas</button>
+          <button class="history-tab" data-tab="pending">Pendentes</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-pill active" data-nav="home">
+        <span class="material-symbols-rounded">home</span>
+        <span>Home</span>
+      </button>
+      <button class="nav-pill" data-nav="market">
+        <span class="material-symbols-rounded">candlestick_chart</span>
+        <span>Mercado</span>
+      </button>
+      <button class="nav-pill" data-nav="trade">
+        <span class="material-symbols-rounded">swap_horiz</span>
+        <span>Negociar</span>
+      </button>
+      <button class="nav-pill" data-nav="bot">
+        <span class="material-symbols-rounded">smart_toy</span>
+        <span>Bot</span>
+      </button>
+      <button class="nav-pill" data-nav="history">
+        <span class="material-symbols-rounded">history</span>
+        <span>Histórico</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Risk Disclaimer Modal -->
+  <div class="modal" id="disclaimerModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="material-symbols-rounded modal-icon">warning</span>
+        <h3 class="modal-title">Aviso de Risco</h3>
+      </div>
+      <div class="modal-body">
+        <p>A Deriv oferece produtos complexos que podem não ser adequados para todos. Certifique-se de que compreende totalmente os riscos envolvidos antes de negociar.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-button secondary" id="learnMoreBtn">Saber Mais</button>
+        <button class="modal-button primary" id="understoodBtn">Ok, Entendi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Snackbar -->
+  <div class="snackbar" id="snackbar">
+    <span class="snackbar-text"></span>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Carregando...</p>
+  </div>
+
+  <!-- Scripts -->
+  <script src="app-config.js"></script>
+  <script src="translations.js"></script>
+  <script src="auth-service.js"></script>
+  <script src="api-service.js"></script>
+  <script src="chart-service.js"></script>
+  <script src="analysis-service.js"></script>
+  <script src="bot-service.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
